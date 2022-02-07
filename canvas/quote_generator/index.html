@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>temp title</title>
+    <!-- for Bootstrap -->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <!-- ICON from fontawsome CDN -->
+    <script src="https://use.fontawesome.com/releases/v5.2.0/js/all.js"></script>
+</head>
+
+<body>
+    <div class="container h-100">
+        <div class="jumbotron">
+            <h1>명언 이미지 생성기<br>
+                <small>무엇이든 멋져 보이게 만들어줍니다.</small>
+            </h1>
+        </div>
+        <!-- <form class="form-horizontal"> -->
+        <div class="form-group">
+            <h3><span class="label label-default">별명</span></h3>
+            <input type="email" class="form-control" id="inputEmail3" placeholder="위대한 (선택)">
+
+            <h3><span class="label label-info">이름</span></h3>
+            <input type="email" class="form-control" id="inputEmail3" placeholder="자라투스트라는">
+
+            <h3><span class="label label-info">인용</span></h3>
+            <textarea class="form-control" rows="3" placeholder="이렇게 말했다."></textarea>
+        </div>
+        <div class="btn-group btn-group-justified" role="group" aria-label="...">
+            <div class="btn-group" role="group" aria-label="modeSwitch">
+                <!-- Mode: Day or Night -->
+                <button type="button" class="btn btn-outline-light">
+                    <span id="modeSwitch" title="day or night" class="far fa-sun fa-3x" onclick="document.querySelector('body').style.backgroundColor='black';
+                    document.querySelector('body').style.color='white'">
+                    </span>
+                </button>
+            </div>
+
+            <div class="btn-group" role="group" aria-label="folder-open">
+                <button type="button" class="btn btn-outline-light">
+                    <i class="fas fa-folder-open fa-3x"></i>
+                </button>
+            </div>
+            <div class="btn-group" role="group" aria-label="submit">
+                <button type="button" class="btn btn-outline-light">
+                    <i class="fab fa-angellist fa-3x"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- <input type="file" id="chooseFile" name="chooseFile" accept="image/*" onchange="loadFile(this)"> -->
+        <!-- <button type="button" class="btn btn-success btn-lg btn-block">멋져 보이게 만들기</button> -->
+
+    </div>
+</body>
+
+</html>
