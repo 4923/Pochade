@@ -1,30 +1,60 @@
 ## 전이 학습 기반 고정된 레이어 수에 따른 건물 전력 소비량 예측 정확도 검증
 
-## Description
-```
-- 동기
+
+### 동기   
 KPMG Ideathon에 적용할 모델링 방법론을 찾던 중, 전이학습의 필요성을 느꼈고
 데스크 리서치를 진행 중 팀 fineapple의 목표 중 하나인 건물 전력 소비량 예측을 연구한 선행연구를 발견,
 확보한 데이터와 현재 지식 수준으로 구현이 가능한지 검증하기 위해 논문 리뷰 및 모델링을 진행한다.  
-[modeling link](https://github.com/4923/Pochade/tree/master/papers/Validation%20of%20Building%20Power%20Consumption%20Prediction%20Accuracy%20According%20to%20Frozen%20Number%20of%20Layers%20based%20on%20Transfer%20Learning)
-```
+- [modeling project repositody](https://github.com/4923/Pochade/tree/master/papers/Validation-of-Building-Power-Consumption-Prediction-Accuracy-According-to-Frozen-Number-of-Layers-based-on-Transfer-Learning)
 
-(1) 연구주제
+## Description
+- 스마트 그리드
+    - 스마트 그리드의 필요성 == 예측이 필요한 이유
+    - 예측한 양에 따라 공급한다
+    - 태양광의 경우 사용하는 시간 != 발전하는 시간이므로 ESS, EMS 등이 발전함
+- 즉, 전력예측이 중요한 지점인데
+    - 그 전까지 예측해오던 방법?
+    - 인공지능이 필요한 이유
+- 인공지능의 특성상: 데이터가 필요
+    - 문제?: 인공지능은 데이터가 겁나 필요한데 반해 신축건물은 데이터가 없음
+    - 해결방법?: 전이학습
+    - 해결방법의 문제? == 본 논문의 문제의식
+
+> 실제 상황에 적용하기 위한 효과적인 fine tuning 방법을 도모  
+> 위 목표를 성취하기 위한: 고정된 레이어 수 파악
+
+- 어떻게? : 정확도로 판정
+
+<hr>
+
+## Review
+
+- [(1) 연구주제](#-1------)
+- [(2) 이 연구를 진행하는 데 필요한 배경지식](#-2-----------------------)
+- [(3) 논문 내용 설명](#-3----------)
+- [(4) 전체적인 결과](#-4---------)
+- [(5) 이러한 결과가 나온 이유](#-5---------------)
+- [(6) 이 논문에서 내 실험을 할 때](#-6------------------)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
+
+### (1) 연구주제  
 말그대로 연구주제가 무엇인지
 
-(2) 이 연구를 진행하는 데 필요한 배경지식
+### (2) 이 연구를 진행하는 데 필요한 배경지식  
 이 연구 전에 다른 사람들이 연구한 내용들, 이 논문에서 가장 많이 나오는 Key point 용어 설명, 왜 이 연구가 필요한지 등등
 
-(3) 논문 내용 설명
+### (3) 논문 내용 설명  
 논문에 따라서 내가 설명하고 싶은 부분
 
-(4) 전체적인 결과
+### (4) 전체적인 결과  
 표로 만들거나 간단하게 설명
 
-(5) 이러한 결과가 나온 이유
+### (5) 이러한 결과가 나온 이유  
 결과 해석-여기서 꼼꼼히 설명
 
-(6) 이 논문에서 내 실험을 할 때 
+### (6) 이 논문에서 내 실험을 할 때   
 필요한 부분 & 이 부분은 실험해 볼 필요가 있는 부분이다 하는 부분 설명
 
 ```
