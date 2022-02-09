@@ -2,28 +2,28 @@
 
 
 ### 동기   
-KPMG Ideathon에 적용할 모델링 방법론을 찾던 중, 전이학습의 필요성을 느꼈고
-데스크 리서치를 진행 중 팀 fineapple의 목표 중 하나인 건물 전력 소비량 예측을 연구한 선행연구를 발견,
-확보한 데이터와 현재 지식 수준으로 구현이 가능한지 검증하기 위해 논문 리뷰 및 모델링을 진행한다.  
-- [modeling project repositody](https://github.com/4923/Pochade/tree/master/papers/Validation-of-Building-Power-Consumption-Prediction-Accuracy-According-to-Frozen-Number-of-Layers-based-on-Transfer-Learning)
+KPMG Ideathon에 적용할 모델링 방법론을 찾던 중, 전이학습의 필요성을 느꼈고 데스크 리서치를 진행 중 팀 fineapple의 목표 중 하나인 건물 전력 소비량 예측을 연구한 선행연구를 발견, 확보한 데이터와 현재 지식 수준으로 구현이 가능한지 검증하기 위해 논문 리뷰 및 모델링을 진행한다.  
+- [model directory](https://github.com/4923/Pochade/tree/master/papers/Validation-of-Building-Power-Consumption-Prediction-Accuracy-According-to-Frozen-Number-of-Layers-based-on-Transfer-Learning)
 
-## Description
+## Overview
 - 스마트 그리드
     - 스마트 그리드의 필요성 == 예측이 필요한 이유
-    - 예측한 양에 따라 공급한다
+    - 전력 저장이 비효율적이므로 예측한 소비량에 따라 공급한다
     - 태양광의 경우 사용하는 시간 != 발전하는 시간이므로 ESS, EMS 등이 발전함
-- 즉, 전력예측이 중요한 지점인데
-    - 그 전까지 예측해오던 방법?
-    - 인공지능이 필요한 이유
+- 즉, 전력 소비량 예측이 중요한 지점인데
+    - 그 전까지 예측해오던 방법?: *배경지식*
+    - 인공지능이 필요한 이유: *배경지식*
 - 인공지능의 특성상: 데이터가 필요
-    - 문제?: 인공지능은 데이터가 겁나 필요한데 반해 신축건물은 데이터가 없음
+    - 인공지능 도입의 문제? : 신축건물 등의 데이터 부족
     - 해결방법?: 전이학습
-    - 해결방법의 문제? == 본 논문의 문제의식
+    - 해결방법의 문제? == 효율적인가?
+        - CV, NLP는 잘 훈련된 사전학습 모델이 있는데 반해 시계열 데이터는 보편적인 데이터가 없어 사전학습이 어려움. 
+        - 즉, **어떻게 해야 효과적으로 전이학습 모델을 구축할 수 있을 것인가?** == 본 논문의 문제의식
 
 > 실제 상황에 적용하기 위한 효과적인 fine tuning 방법을 도모  
 > 위 목표를 성취하기 위한: 고정된 레이어 수 파악
 
-- 어떻게? : 정확도로 판정
+- 어떻게? 기준은? : 정확도로 판정
 
 <hr>
 
@@ -36,42 +36,132 @@ KPMG Ideathon에 적용할 모델링 방법론을 찾던 중, 전이학습의 �
 - [(5) 이러한 결과가 나온 이유](#-5---------------)
 - [(6) 이 논문에서 내 실험을 할 때](#-6------------------)
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
-
-### (1) 연구주제  
-말그대로 연구주제가 무엇인지
+### (1) 연구 주제  
+본 연구의 목적은 시계열 데이터를 대상으로 효과적인 전이 학습을 진행하기 위한 Frozen layer의 수를 **정량적**으로 제안하는 것이다.
+- My keyword: 전이학습, 고정레이어, 시계열데이터
 
 ### (2) 이 연구를 진행하는 데 필요한 배경지식  
-이 연구 전에 다른 사람들이 연구한 내용들, 이 논문에서 가장 많이 나오는 Key point 용어 설명, 왜 이 연구가 필요한지 등등
+**1) 관련 이론**
+
+<details>
+<summary><b> 시계열 데이터 (Time Series) 란?<b></summary>
+
+- 시간에 따라 관찰된 데이터들의 집합.
+- 정상 시계열과 비정상 시계열로 나뉘며, '평균과 표준편차가 일치하는 조건'을 만족하는 시계열 데이터를 정상시계열이라고 부른다. 비정상 시계열은 차분이나 log 함수를 씌워 정상시계열로 변환해야 한다.
+    - 주의: 시계열 구간을 작은 범위에서 큰 범위로는 변환할 수 있지만 반대는 불가. (e.g. 일간 > 주간 > 월간은 가능하지만 **월간 > 주간> 일간은 불가능**하다.)
+- 패턴에 따라 정의되는데, 이 때의 시계열 데이터를 변동 모형이라고 말한다. 종류는 아래와 같다.
+    |모형|특징|
+    |:-|:-|
+    |추세 Trend| 상승과 하락이 있다.
+    |계절 Season| 1년에 월, 분기로 반복된다.|
+    |순환 Circulation, 경기 변동| 장기간 간격을 두고 상승, 하락이 주기적으로 반복|
+    |불규칙 irregular| 승법(곱셈:추세*계절...) 모형과 가법(덧셈:추세+계절...) 모형으로 나뉜다.|
+
+- [참고](https://techblog-history-younghunjo1.tistory.com/68)
+
+</details>
+
+<details>
+<summary><b>사용할 수 있는 모델들<b></summary>
+
+### (통계 모델)
+
+시계열에서 LSTM이 자주 쓰이는 이유 당연히 시간을 반영하기 때문이겠지만, 다른 모델은 뭐 있는지 확인하기 위해 사전조사.
+
+- 통계모형: AR, MA, ARMA, ARIMA 모형이 있다.
+    - AR: 자기 상관성, 직전의 값이 이후의 값에 영향을 주는 성질로 delay가 있을 수도 있다. 
+        - 예: 늘린 용수철이 제자리로 돌아가는 과정에서의 길이
+    - MA: 이동 평균. 특정 크기의 부분 집합을 평균낸 값이다. (모든 값이 대상이 아니라는 점에서 일반 평균과 다르다.) 평균값이 시간에 따라 변하므로 전반적인 변화 흐름을 알 수 있다.
+        - 예: 최근 50일의 평균보다 최근 15일의 이동 평균 값이 커지면 주가가 치솟는다.
+
+- ARIMA는 무엇? ETS는? 딥러닝 모델이 아니네?
+    - ARIMA는 과거 정보에서 패턴을 분석하고 이것이 확률적으로 지속될 것이라는 '양적 예측 방법'의 '확률적 시계열 분석' 중 시간 영역에 해당하는 모델이다. 
+    - ARIMA는 자기회귀 모델 AR과 이동 평균 모델인 MA 을 합한 ARMA에 차분을 추가한 모델이다. 차분을 추가함으로써 비정상성의 데이터를 정상화 시켜줄 수 있다.
+    - ARIMA에 계절적 성분인 S를 추가한모델은 SARIMA모델이다.
+    - [참고 1](https://techblog-history-younghunjo1.tistory.com/98?category=900654)
+    - [참고 2](https://m.blog.naver.com/bluefish850/220749045909)
+
+- 이미 잘 연구된 모델들이 있는데 왜 이걸 사용하지 않는가? == 통계모델의 한계: 
+    - 
+
+
+### (머신러닝/딥러닝)
+
+ANN > RNN > LSTM
+- 기존 모델과 최신 모델 비교
+    - FB의 Prophet은 LSTM과 뭐가 다른가?
+
+    - NeuralProphet FB의 Prophet에서 뭘 더 보완한건가?
+
+    - 사용하기 위해선 어떻게 해야하나?
+</details>
+<br>
+
+
+**2) 연구의 필요성**  
+소비 예측에 딥러닝을 적용해야 하는 필요성, 그리고 전이학습의 필요성으로 나눌 수 있겠다.
+
+1. 시계열 데이터에 딥러닝을 적용해야 하는 이유
+    - [O'REILLY 3 reasons to add deep learning to your time series toolkit](https://www.oreilly.com/ideas/3-reasons-to-add-deep-learning-to-your-time-series-toolkit)
+    
+2. 전이학습이 필요한 이유
+
+**3) 배경지식 및 선행연구 한 줄 요약**
+
 
 ### (3) 논문 내용 설명  
-논문에 따라서 내가 설명하고 싶은 부분
+
+<details>
+<summary> 들어가며 </summary>
+
+16년도 이후로 후속 연구가 진행되지 않았거나, 관련 연구가 보이지 않는다!<br>
+이 논문은 20년도 12월에 발표되었으니 그나마 최근이지만, 관련 연구가 많이 없는데엔 분명 이유가 있을 것이다.<br>
+그 이유를 <b>'시계열 데이터'에 전이 학습을 적용할 수 없는 이유가 있기 때문</b>으로 가정하고 리뷰하겠다.
+
+주안점은 다음과 같다.
+
+<ol>
+    <li>시계열 데이터의 특징과 사전학습을 시키기 위한 방법</li>
+    <li>classification까지는 된다. 수치예측이 안되는 '구체적인 이유' 는?</li>
+    <li>본 논문에서 긍정적인 결론을 얻을 수 있었던 이유는?</li>
+    <li>그리고 그 결론이 얼마나 실효성 있는 결론인가?</li>
+</ol>
+
+이 모든것을 종합했을 때, 내가 성취하려는 목표를 해당 방법 (전이학습) 으로 이룰 수 있을 것인가?
+
+</details>
+
+Q : 굳이 고정레이어의 수를 결정하는 이유가 무엇인가? (연구의 필요성)  
+A : 시계열 데이터는 실제 데이터가 더 중요하기 때문 아닐까?
+
+- 실험 목표
+- 실험 대상
+- 실험 기준
+- 실험 결과
 
 ### (4) 전체적인 결과  
 표로 만들거나 간단하게 설명
 
+지표와 결과 설명
+
 ### (5) 이러한 결과가 나온 이유  
 결과 해석-여기서 꼼꼼히 설명
+또 한계를 찾아봅시다
+
+결론 (결과와는 다름) 토의
 
 ### (6) 이 논문에서 내 실험을 할 때   
 필요한 부분 & 이 부분은 실험해 볼 필요가 있는 부분이다 하는 부분 설명
+- 본격적인 모델링을 위한 설계
+    - 내가 해볼만한 method
+    - 흥미로웠던 부분
 
-```
-- 무슨 연구를 한건지!
-- 이 연구 전에 저자가 알아낸 배경지식은?
-- 이 논문에서 중점적으로 볼 것은?
-- 결론 간략하게 도식화해서 나타내보기
-- METOD/EXPERIMENT 에서 내가 필요한 부분
 
-정리해보기
-- 이 논문에서 내가 해 볼만한 METHOD 
-(흥미롭게 느낀 부분)
-
-```
+<hr>
 
 ![transfer learning](https://user-images.githubusercontent.com/60145951/152255381-b1f976ff-73cc-4aa1-b324-ca1d0b72e8e6.png)
-[image reference: IT FIND 인공지능 전이학습과 응용 분야 동향](https://mangastorytelling.tistory.com/entry/ITFIND-%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5-%EC%A0%84%EC%9D%B4%ED%95%99%EC%8A%B5Transfer-Learning%EA%B3%BC-%EC%9D%91%EC%9A%A9-%EB%B6%84%EC%95%BC-%EB%8F%99%ED%96%A5)
+- [image reference: IT FIND 인공지능 전이학습과 응용 분야 동향](https://mangastorytelling.tistory.com/entry/ITFIND-%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5-%EC%A0%84%EC%9D%B4%ED%95%99%EC%8A%B5Transfer-Learning%EA%B3%BC-%EC%9D%91%EC%9A%A9-%EB%B6%84%EC%95%BC-%EB%8F%99%ED%96%A5)
 
 ![strategies](https://user-images.githubusercontent.com/60145951/152263256-8ae6c2c7-5797-4e84-a613-4e121de72a9a.png)
-[image reference: Transfer Learning](https://choice-life.tistory.com/40)
+- [image reference: Transfer Learning](https://choice-life.tistory.com/40)
