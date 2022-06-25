@@ -1,3 +1,8 @@
+# PERSONAL
+
+# Models
+*.pt
+*.pkl
 
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,macos,python,django,jupyternotebooks
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,macos,python,django,jupyternotebooks
