@@ -1,13 +1,33 @@
-> 일단 영상이 아니라 이미지를 기준으로 하고 실시간 영상처리는 어떻게 해결해야할지 언젠가 고민을 해보자
+<div align="center">
 
+<img src="https://user-images.githubusercontent.com/60145951/175774283-a354121c-2404-4932-a65a-47e466a9fb31.png" alt="Conference on Computer Vision and Pattern Recognition" width=300>
 
-- [ ] <s>google pose detection API 끌어오기</s> Pose Detection
-    - [네이버 클라우드 플랫폼](https://www.ncloud.com/product/aiService/poseEstimation) 에서 결제수단 등록 후 사용 가능 - 호출마다 돈들어가서 그냥 Open Pose 사용하기로 함
-    - [ ] OpenPose 튜토리얼
+<small>Conference on Computer Vision and Pattern Recognition</small>
+
+</div>
+
+- **Input**: Image, video, **webcam**, Flir/Point Grey, IP camera, and support to add your own custom input source (e.g., depth camera).
+- **Output**: Basic image + keypoint display/saving (PNG, JPG, AVI, ...), **keypoint saving** (JSON, XML, YML, ...), keypoints as array class, and support to add your own custom output code (e.g., some fancy UI).
+- **OS**: Ubuntu (20, 18, 16, 14), Windows (10, 8), **Mac OSX**, Nvidia TX2.
+- **Hardware compatibility**: CUDA (Nvidia GPU), OpenCL (AMD GPU), and **non-GPU (CPU-only)** versions.
+
+- custom
+    - 로컬에서 값 추출되는 정도만 확인하려 했으므로 CPU-only로 세팅
+    - OpenCL이 좀 더 성능이 좋으나 설치에 어려움이 따른다고 함. 둘 다 시도해봤으나 clang compile 문제로 현재 중지상태
 
 ---
 
-## Starters-Kit
+### 개발방법
+
+- 윈도우에서 바로 사용할 수 있는 방법 (portable kit) 이 있으나 맥인 관계로 소스코드 받아와 직접 실행하는 과정 거침: [https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/installation/0_index.md#compiling-and-running-openpose-from-source](https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/installation/0_index.md#compiling-and-running-openpose-from-source)
+- clang 컴파일은 Xcode를 통해 할 수 있다는 이야기가 나오는데 (SDK 에러메시지) 맥북이 XCode를 거부하는지 반대인지 설치가 안된다…
+    
+    ![구글 자동검색도 있던데 수동설치는 또 안됨… 강제로 지워야 하는 폴더가 없어서…](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/2be0c496-6520-4e77-bfb4-38df40b80d15/Untitled.gif)
+    
+    구글 자동검색도 있던데 수동설치는 또 안됨… 강제로 지워야 하는 폴더가 없어서…
+
+---
+### Install Log
 
 1. 설치
 
@@ -42,8 +62,7 @@ sudo: python2: command not found
 sudo -H python2 -m pip install opencv-python<4.3
 sudo: python2: command not found
 ```
-여기서 에러났는데 어떡하냐
-어차피 마지막 줄이라
+에러 발생해서 아래와 같이 변경
 
 ```bash
 # install_deps.sh
@@ -116,5 +135,4 @@ brew --prefix 로 확인한 위치에 cblas가 있는데 불러오지 못하는 
 <img width="725" alt="image" src="https://user-images.githubusercontent.com/60145951/175668020-453e793a-2e71-45ae-86b7-738d77c24ad0.png">
 
 [여기](https://github.com/amd/OpenCL-caffe/issues/36#issuecomment-199587164)서 말하는 바에 따르면 brew로 설치한 경우 주석 처리를 제거해야 한다는데 `Makefile.config`를 어디서 찾을지 모르겠다. == [build dir의 최상위에 있다고 한다.](https://releases.llvm.org/1.6/docs/MakefileGuide.html#:~:text=Makefile.config-,Every%20project%20must%20have%20a%20Makefile.,of%20the%20project's%20source%20directory.) .config 가 없는 Makefile을 말하는 것 같아 편집하기로 했다. 
-
 
