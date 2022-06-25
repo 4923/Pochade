@@ -1,7 +1,7 @@
 > Capture the atmosphere of a scene
 
 ### [Read up papers: refresh, review, study.](https://github.com/4923/Pochade/tree/master/papers)
-지적 유희를 즐기는 학부생의 학술자료 탐색
+학부생의 신분을 즐기기
 
 ### [A canvas for projects: sketch ideas crossing my mind.](https://github.com/4923/Pochade/tree/master/canvas)
 시험삼아, 재미를 위해 만드는 토이 프로젝트들 또는 자잘한 작업물 모음
