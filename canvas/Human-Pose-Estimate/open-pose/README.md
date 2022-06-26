@@ -20,14 +20,10 @@
 ### 개발방법
 
 - 윈도우에서 바로 사용할 수 있는 방법 (portable kit) 이 있으나 맥인 관계로 소스코드 받아와 직접 실행하는 과정 거침: [https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/installation/0_index.md#compiling-and-running-openpose-from-source](https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/installation/0_index.md#compiling-and-running-openpose-from-source)
-- clang 컴파일은 Xcode를 통해 할 수 있다는 이야기가 나오는데 (SDK 에러메시지) 맥북이 XCode를 거부하는지 반대인지 설치가 안된다…
-    
-    ![구글 자동검색도 있던데 수동설치는 또 안됨… 강제로 지워야 하는 폴더가 없어서…](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/2be0c496-6520-4e77-bfb4-38df40b80d15/Untitled.gif)
-    
-    구글 자동검색도 있던데 수동설치는 또 안됨… 강제로 지워야 하는 폴더가 없어서…
+- clang 컴파일은 Xcode를 통해 할 수 있다고 하나 정말 컴파일 문제였는지는 미지수. 우선 XCode 설치 후 진행함
 
 ---
-### Install Log
+## Install Log
 
 > [ref: Medium / Build openpose with/without GPU support for macOS (Catalina 10.15.6) / 2020.8](https://medium.com/@alok.gandhi2002/build-openpose-with-without-gpu-support-for-macos-catalina-10-15-6-8fb936c9ab05)
 
@@ -1286,3 +1282,107 @@ make: *** [all] Error 2
 
 </details>
 
+### [python에서 사용하기](https://medium.com/pixel-wise/real-time-pose-estimation-in-webcam-using-openpose-python-2-3-opencv-91af0372c31c)
+
+```bash
+# ~/openpose/build
+sudo make install
+```
+
+```bash
+Consolidate compiler generated dependencies of target pyopenpose
+make[2]: *** No rule to make target `caffe/lib/libcaffe.dylib', needed by `python/openpose/pyopenpose.cpython-39-darwin.so'.  Stop.
+make[1]: *** [python/openpose/CMakeFiles/pyopenpose.dir/all] Error 2
+make: *** [all] Error 2
+```
+
+
+#### **[issue 5]** : pyopenpose binding issue, *No rule to make target `caffe/lib/libcaffe.dylib', needed by `python/openpose/pyopenpose.cpython-39-darwin.so'.* -> dylib 경로 문제
+
+
+<details>
+
+<summary> error log </summary>
+
+```bash
+(torch-py38)  ✘ ⚙   ~/Desktop/repositories/_construct/openpose/build   master ±  make -j`sysctl -n hw.logicalcpu`
+[ 97%] Performing configure step for 'openpose_lib'
+CMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 2.8.12 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Warning (dev) at cmake/Misc.cmake:32 (set):
+  implicitly converting 'BOOLEAN' to 'STRING' type.
+Call Stack (most recent call first):
+  CMakeLists.txt:25 (include)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Found gflags  (include: /opt/homebrew/include, library: /opt/homebrew/lib/libgflags.dylib)
+-- Found glog    (include: /opt/homebrew/include, library: /opt/homebrew/lib/libglog.dylib)
+-- Found PROTOBUF Compiler: /opt/homebrew/bin/protoc
+Consolidate compiler generated dependencies of target openpose
+[ 97%] Built target openpose
+Consolidate compiler generated dependencies of target pyopenpose
+Consolidate compiler generated dependencies of target openpose_core
+make[2]: *** No rule to make target `caffe/lib/libcaffe.dylib', needed by `python/openpose/pyopenpose.cpython-39-darwin.so'.  Stop.
+make[1]: *** [python/openpose/CMakeFiles/pyopenpose.dir/all] Error 2
+make[1]: *** Waiting for unfinished jobs....
+[ 97%] Built target openpose_core
+-- -- CUDA is disabled. Building without it...
+CMake Error at /Applications/CMake.app/Contents/share/cmake-3.23/Modules/FindPackageHandleStandardArgs.cmake:230 (message):
+  Could NOT find vecLib (missing: vecLib_INCLUDE_DIR)
+Call Stack (most recent call first):
+  /Applications/CMake.app/Contents/share/cmake-3.23/Modules/FindPackageHandleStandardArgs.cmake:594 (_FPHSA_FAILURE_MESSAGE)
+  cmake/Modules/FindvecLib.cmake:24 (find_package_handle_standard_args)
+  cmake/Dependencies.cmake:135 (find_package)
+  CMakeLists.txt:49 (include)
+
+
+-- Configuring incomplete, errors occurred!
+See also "/Users/a4923/Desktop/repositories/_construct/openpose/build/caffe/src/openpose_lib-build/CMakeFiles/CMakeOutput.log".
+See also "/Users/a4923/Desktop/repositories/_construct/openpose/build/caffe/src/openpose_lib-build/CMakeFiles/CMakeError.log".
+make[2]: *** [caffe/src/openpose_lib-stamp/openpose_lib-configure] Error 1
+make[1]: *** [CMakeFiles/openpose_lib.dir/all] Error 2
+make: *** [all] Error 2
+```
+
+</details>
+
+말그대로 gui에 세팅해둔 `./build/caffe/lib/libcaffe.dylib` 파일이 없기 때문에 발생한 문제. `/opt/homebrew/Cellar/caffe/1.0_38/lib/libcaffe.dylib` 로 변경하니 darwin.so 는 linked 완료
+
+이후 `~/openpose/build/python/` 에서 `sudo make install` 하면 설치 완료되는 모습 볼 수 있음
+
+```bash
+(torch-py38)  ⚙   ~/Desktop/repositories/_construct/openpose/build   master ±  cd python
+(torch-py38)  ⚙   ~/Desktop/repositories/_construct/openpose/build/python   master ±  sudo make install
+Password:
+[ 97%] Built target openpose
+[100%] Built target pyopenpose
+Install the project...
+-- Install configuration: "Release"
+-- Installing: /usr/local/python/pyopenpose.cpython-39-darwin.so
+-- Installing: /usr/local/python/openpose
+-- Installing: /usr/local/python/openpose/pyopenpose.cpython-39-darwin.so
+-- Installing: /usr/local/python/openpose/CMakeFiles
+-- Installing: /usr/local/python/openpose/CMakeFiles/pyopenpose.dir
+-- Installing: /usr/local/python/openpose/__pycache__
+-- Up-to-date: /usr/local/python/openpose
+-- Up-to-date: /usr/local/python/openpose/CMakeFiles
+-- Up-to-date: /usr/local/python/openpose/CMakeFiles/pyopenpose.dir
+-- Installing: /usr/local/python/openpose/__init__.py
+-- Up-to-date: /usr/local/python/openpose/__pycache__
+```
+
+
+#### [issue 6] import error* (on going)
+
+https://github.com/CMU-Perceptual-Computing-Lab/openpose/issues/1623
+
+<img width="851" alt="image" src="https://user-images.githubusercontent.com/60145951/175813056-21ae1492-9c68-4134-b1ad-236f4979018e.png">
+
+python 위치에 제대로 설치되었는데 불러오지 못하는 상태.
+- [ ] 해당 파일을 python library 관리 경로에 붙여넣기 시도해 볼 것
